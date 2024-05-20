@@ -30,7 +30,7 @@ fun CatfishNavHost(
     NavHost(
         modifier = modifier.padding(innerPadding),
         navController = navController,
-        startDestination = HomeDestination.route,
+        startDestination = TTSDestination.route,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
     ) {
