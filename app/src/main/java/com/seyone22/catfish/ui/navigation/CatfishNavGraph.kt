@@ -7,14 +7,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.seyone22.catfish.ui.screen.HomeDestination
 import com.seyone22.catfish.ui.screen.HomeScreen
 import com.seyone22.catfish.ui.screen.SettingsDestination
 import com.seyone22.catfish.ui.screen.SettingsScreen
+import com.seyone22.catfish.ui.screen.TTSDestination
+import com.seyone22.catfish.ui.screen.TTSScreen
 
 
 /**
@@ -26,7 +26,6 @@ fun CatfishNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     innerPadding : PaddingValues,
-    goFullscreen : () -> Unit
 ) {
     NavHost(
         modifier = modifier.padding(innerPadding),
@@ -40,6 +39,14 @@ fun CatfishNavHost(
             HomeScreen(
                 navigateToScreen = { screen -> navController.navigate(screen) },
                 modifier = modifier,
+            )
+        }
+
+        // Route to Text-to-Speech screen
+        composable(route = TTSDestination.route) {
+            TTSScreen(
+                navigateToScreen = { screen -> navController.navigate(screen) },
+                modifier = modifier
             )
         }
         // Routes to settings screen

@@ -15,6 +15,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -78,4 +83,9 @@ dependencies {
 
     implementation("net.java.dev.jna:jna:5.13.0@aar")
     //implementation(project(mapOf("path" to ":models")))
+
+    implementation("org.tensorflow:tensorflow-lite:2.9.0")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.10.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.2")
+
 }
