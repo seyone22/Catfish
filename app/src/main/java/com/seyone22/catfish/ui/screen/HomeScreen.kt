@@ -5,17 +5,28 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GolfCourse
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.seyone22.catfish.R
@@ -46,7 +57,6 @@ object HomeDestination : NavigationDestination {
 private const val TAG = "HomeScreen"
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier,
@@ -66,6 +76,9 @@ fun HomeScreen(
     var speechStreamService: SpeechStreamService? = null    //from vosk android
 
     val context = LocalContext.current
+
+    var status by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("") }
 
     fun copyAssetsWithExtensionsToDataFolder(context: Context, extensions: Array<String>) {
         val assetManager = context.assets
@@ -134,6 +147,7 @@ fun HomeScreen(
     fun stopTranscription() {
         mWhisper!!.stop()
     }
+
     var modelPath: String
     var vocabPath: String
 
@@ -155,6 +169,8 @@ fun HomeScreen(
 
         override fun onResultReceived(result: String) {
             Log.d(TAG, "Result: $result")
+            status = ""
+            text = result
         }
     })
 
@@ -172,40 +188,56 @@ fun HomeScreen(
         }
     })
 
-    Column(modifier = modifier) {
-        IconButton(onClick = {
-            if (mRecorder != null && mRecorder.isInProgress) {
-                Log.d(TAG, "Recording is in progress... stopping...")
-                stopRecording()
-                Log.d(TAG, "HomeScreen: ${waveFileName}")
-            } else {
-                Log.d(TAG, "Start recording...")
-                startRecording()
+    Column(modifier = Modifier.padding(8.dp,0.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(modifier = Modifier
+                .width(160.dp)
+                .padding(8.dp), onClick = {
+                if (mRecorder != null && mRecorder.isInProgress) {
+                    Log.d(TAG, "Recording is in progress... stopping...")
+                    stopRecording()
+                    Log.d(TAG, "HomeScreen: ${waveFileName}")
+                } else {
+                    Log.d(TAG, "Start recording...")
+                    startRecording()
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Mic, contentDescription = null
+                )
+                Text(text = "Record")
             }
-        }) {
-            Icon(
-                imageVector = Icons.Default.Mic,
-                contentDescription = null
-            )
+            Button(modifier = Modifier
+                .width(172.dp)
+                .padding(8.dp), onClick = {
+                if (waveFileName[0] == null) {
+                    Log.d(TAG, "No recording available to transcribe.")
+                    return@Button
+                }
+                if (mWhisper != null && mWhisper.isInProgress) {
+                    Log.d(TAG, "Whisper is already in progress...!")
+                    stopTranscription()
+                } else {
+                    Log.d(TAG, "Start transcription...")
+                    val waveFilePath = getFilePath(waveFileName[0]!!)
+                    startTranscription(waveFilePath)
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Default.TextFields, contentDescription = null
+                )
+                Text(text = "Transcript")
+            }
         }
-        IconButton(onClick = {
-            if (waveFileName[0] == null) {
-                Log.d(TAG, "No recording available to transcribe.")
-                return@IconButton
-            }
-            if (mWhisper != null && mWhisper.isInProgress) {
-                Log.d(TAG, "Whisper is already in progress...!")
-                stopTranscription()
-            } else {
-                Log.d(TAG, "Start transcription...")
-                val waveFilePath = getFilePath(waveFileName[0]!!)
-                startTranscription(waveFilePath)
-            }
-        }) {
-            Icon(
-                imageVector = Icons.Default.GolfCourse,
-                contentDescription = null
-            )
+        Row {
+            Text(text = text)
         }
+/*        Row(
+            modifier = Modifier.padding(top=200.dp)
+        ) {
+            Text(text = "Status: $status")
+        }*/
     }
 }

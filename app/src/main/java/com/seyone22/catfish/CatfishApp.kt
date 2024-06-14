@@ -45,24 +45,6 @@ fun CatfishApp() {
     val selectedDestination = remember { mutableStateOf<NavigationDestination>(HomeDestination) }
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    Log.d("TAG", "HomeScreen: Clicked")
-                    if (audioPermissionState.status.isGranted) {
-
-                    } else {
-                        Toast.makeText(context, "Microphone permissions not granted!", Toast.LENGTH_SHORT).show()
-                        audioPermissionState.launchPermissionRequest()
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = null
-                )
-            }
-        },
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(text = (stringResource(id = R.string.app_name)).toString()) }
@@ -124,12 +106,6 @@ val activitiesAndIcons = listOf(
     ActivityIconPair(
         name = "TTS",
         TTSDestination,
-        Icons.Outlined.AccountBalance,
-        Icons.Filled.AccountBalance
-    ),
-    ActivityIconPair(
-        name = "Settings",
-        SettingsDestination,
         Icons.Outlined.AccountBalance,
         Icons.Filled.AccountBalance
     ),
